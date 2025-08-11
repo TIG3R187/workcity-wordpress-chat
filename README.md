@@ -82,3 +82,27 @@ Fatal error: Cannot redeclare workcity_get_user_role() (previously declared in C
 *   **OneSignal Push Notifications:** If you have OneSignal Push Notifications enabled, please deactivate it as this plugin handles email push notifications. 
 *   **Brevo Integration:** This plugin can be integrated with Brevo (Email, SMS, Web Push, Chat) for enhanced marketing and communication features. Further integration details would be provided based on specific requirements.
 *   **YouTube Video:** I will not be able to provide a YouTube video for this project at this time.
+
+---
+
+## 🚧 Challenges Faced So Far 🚧
+
+### 🎨 CSS Role Colors Not Showing
+
+*   **Problem:** CSS classes for roles like `.role-administrator`, `.role-customer`, etc., are defined, but messages are being appended with `admin-msg` / `user-msg` instead of the role-based classes. This mismatch means styles are never applied.
+
+### 🔄 Class Mismatch Between PHP and JS
+
+*   **Problem:** PHP sends a `role_class` (e.g., `role-administrator`), but JavaScript ignores it and uses its own class naming logic. This needs to be unified so styles attach correctly.
+
+### 👻 Live Updates Working, but Styling Missing
+
+*   **Problem:** Fetching messages via AJAX works, and messages display fine, but they have no background colors or text styles.
+
+### 🏗️ HTML Structure Not Matching CSS Expectations
+
+*   **Problem:** CSS expects `.workcity-chat-message` as a base wrapper class, but JavaScript appends plain `<div class="admin-msg">` without that wrapper.
+
+### ❓ Unclear File Placement
+
+*   **Problem:** Initial confusion about where to put CSS and JS files in the WordPress plugin/theme structure. Some CSS was not enqueued or linked properly in WordPress.
