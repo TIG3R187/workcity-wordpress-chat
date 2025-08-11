@@ -25,7 +25,7 @@ This plugin meets all the required features and includes several bonus features 
 
 - **Backend:** PHP, WordPress Plugin API, AJAX, REST API, Custom Database Tables
 - **Frontend:** JavaScript (jQuery), HTML5, CSS3
-- **Platform:** WordPress & WooCommerce
+- **Platform:** localWordPress & WooCommerce
 
 ---
 
