@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\chat.css||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:chat.css||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\workcitychat.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:workcitychat.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
@@ -19,12 +23,25 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "chat.css",
+              "DocumentMoniker": "C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\chat.css",
+              "RelativeDocumentMoniker": "chat.css",
+              "ToolTip": "C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\chat.css",
+              "RelativeToolTip": "chat.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-08-08T23:03:06.043Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "workcitychat.php",
               "DocumentMoniker": "C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\workcitychat.php",
               "RelativeDocumentMoniker": "workcitychat.php",
               "ToolTip": "C:\\Users\\HP\\Local Sites\\workcity-chat\\app\\public\\wp-content\\plugins\\workcity-chat\\workcitychat.php",
               "RelativeToolTip": "workcitychat.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABkAAAAAAAAAAAAYwCwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-08-08T15:04:12.194Z",
               "EditorCaption": ""

@@ -1,0 +1,192 @@
+/* ----- Workcity Chat: Base Layout ----- */
+.workcity-chat-container {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  font-family: system-ui, -apple-system, Roboto, "Helvetica Neue", Arial;
+}
+
+/* Header */
+.chat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.chat-title { margin:0; font-size:16px; }
+.chat-toggle-dark { background:transparent; border:none; cursor:pointer; font-size:18px; }
+
+/* Messages */
+.chat-messages {
+  min-height: 220px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 8px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  border-radius:8px;
+  background:#fafafa;
+}
+
+/* Single message */
+.workcity-chat-message {
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width:78%;
+  word-break:break-word;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+}
+
+/* Meta and time */
+.workcity-chat-message .meta { font-size:12px; color:#666; margin-bottom:6px; }
+.chat-time { font-size:11px; color:#888; margin-left:8px; }
+
+/* Role Colors (light) */
+.role-administrator { background:#ffebee; color:#7a0c0c; align-self:flex-end; }
+.role-customer, .role-buyer { background:#e0f7fa; color:#004d54; align-self:flex-start; }
+.role-merchant { background:#fff8e6; color:#7a4b00; align-self:flex-start; }
+.role-designer { background:#f3e5f5; color:#3f0067; align-self:flex-start; }
+.role-agent { background:#e8f5e9; color:#0b5d0b; align-self:flex-start; }
+
+/* Controls */
+.chat-controls {
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+  margin-top:10px;
+}
+.chat-input {
+  flex:1 1 auto;
+  min-height:48px;
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid #e3e3e3;
+  resize:vertical;
+  font-size:14px;
+}
+
+/* File input styling */
+.chat-file-wrap { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+.chat-file-label {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px dashed #d0d0d0;
+  font-size:13px;
+  background:#fff;
+}
+.chat-file-label input[type="file"] { display:none; }
+.chat-file-preview img { max-width:120px; max-height:120px; border-radius:8px; display:block; }
+
+/* Send button */
+.chat-send-btn {
+  background:#0a84ff;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* Dark mode */
+.chat-dark-mode .workcity-chat-container { background:#0f0f0f; color:#eaeaea; }
+.chat-dark-mode .chat-messages { background:#111; }
+.chat-dark-mode .workcity-chat-message { background:#1b1b1b; color:#eee; }
+.chat-dark-mode .chat-file-label { background:#111; border-color:#303030; color:#ddd; }
+
+/* Responsive */
+@media (max-width:640px) {
+  .workcity-chat-container { padding:10px; }
+  .chat-file-preview img { max-width:100px; max-height:100px; }
+}
+
+/* sent vs received (makes admin/you appear on the right by default) */
+.my-message { align-self: flex-end; }
+.their-message { align-self: flex-start; }
+
+/* message meta layout: keep name and time on same line */
+.workcity-chat-message .meta { display:flex; align-items:center; gap:8px; justify-content:space-between; }
+
+/* ensure role colour classes still visible in dark mode (fine-tune as needed) */
+/* role overrides for dark */
+html.chat-dark-mode .role-administrator { background:#6b2b6b !important; color:#100b0b !important; }
+html.chat-dark-mode .role-customer, html.chat-dark-mode .role-buyer { background:#0b4a52 !important; color:#fff !important; }
+html.chat-dark-mode .role-merchant { background:#5a3e00 !important; color:#fff !important; }
+html.chat-dark-mode .role-designer { background:#3a0067 !important; color:#fff !important; }
+html.chat-dark-mode .role-agent { background:#004d24 !important; color:#fff !important; }
+
+/* message borders more visible on dark */
+html.chat-dark-mode .workcity-chat-message { border: 1px solid rgba(254, 254, 254, 0.06); box-shadow: none; }
+
+/* small accessibility / contrast tweak for chat-time in dark */
+.chat-dark-mode .chat-time { color: #cfcfcf; }
+
+/* Global dark mode overrides when .chat-dark-mode is set on <html> or <body> */
+html.chat-dark-mode,
+body.chat-dark-mode,
+html.chat-dark-mode * ,
+body.chat-dark-mode * {
+  background: #0f0f0f !important;
+  color: #eaeaea !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Specific common theme containers (increase coverage) */
+html.chat-dark-mode .site,
+html.chat-dark-mode .site-header,
+html.chat-dark-mode .site-footer,
+html.chat-dark-mode .site-content,
+html.chat-dark-mode .entry-content,
+html.chat-dark-mode main {
+  background: #0f0f0f !important;
+  color: #eaeaea !important;
+}
+
+/* Links */
+html.chat-dark-mode a { color: #7fc7ff !important; }
+html.chat-dark-mode a:hover { color: #bfefff !important; }
+
+/* GLOBAL DARK MODE (applies to entire page when html.chat-dark-mode is set) */
+html.chat-dark-mode,
+body.chat-dark-mode {
+  background: #0f0f0f !important;
+  color: #eaeaea !important;
+}
+
+/* theme containers (most themes use .site, .site-content etc) */
+html.chat-dark-mode .site,
+html.chat-dark-mode .site-content,
+html.chat-dark-mode main,
+html.chat-dark-mode body,
+html.chat-dark-mode .content {
+  background: #171616 !important;
+  color: #050505 !important;
+}
+
+/* Chat container stands out on dark */
+html.chat-dark-mode .workcity-chat-container {
+  background: #1a1919 !important;
+  border: 1px solid rgba(11, 7, 255, 0.08) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important;
+}
+
+/* Message borders in dark */
+html.chat-dark-mode .workcity-chat-message {
+  border: 1px solid rgba(6, 10, 251, 0.06)
+}
+
+/* Inputs visible in dark */
+html.chat-dark-mode textarea,
+html.chat-dark-mode input[type="text"],
+html.chat-dark-mode .chat-file-label,
+html.chat-dark-mode input[type="file"] {
+  background: #2a2828 !important;
+  color: #eee !important;
+  border: 1px solid rgba(249, 238, 238, 0.08) !important;
+}
