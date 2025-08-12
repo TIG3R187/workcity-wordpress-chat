@@ -235,7 +235,7 @@ jQuery(function($){
   btn.id = 'chat-dark-toggle';
   btn.setAttribute('aria-label','Toggle chat dark mode');
   btn.style.position = 'fixed';
-  btn.style.top = '18px';
+  btn.style.top = '40px';
   btn.style.left = '50%';
   btn.style.transform = 'translateX(-50%)';
   btn.style.zIndex = '99999';
