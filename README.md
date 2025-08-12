@@ -1,108 +1,139 @@
-# Workcity WordPress Chat
+🚧 Workcity WordPress Chat
+A robust, scalable, and user-friendly chat solution for WordPress & WooCommerce.
+Real-time-ish chat using AJAX (polling), instance-aware frontend, WooCommerce product chat, file uploads, role-based styling and read/unread states.
 
-A robust, scalable, and user-friendly chat solution for WordPress and WooCommerce. This plugin provides a real-time chat system allowing authenticated users (buyers, merchants, designers, agents) to communicate directly on the platform with product-based context.
+✨ Highlights
+✅ Single custom indexed table for messages (wp_workcity_messages) for performance.
 
----
+✅ Instance-aware front-end: multiple chat windows / modals on the same page.
 
-## Features
+✅ Unified AJAX handlers with nonce checks and consistent response shape.
 
-This plugin meets all the required features and includes several bonus features for an enhanced user experience.
+✅ File upload support (via AJAX / wp_handle_upload) with image preview.
 
-- **Custom Post Type for Chat Sessions:** Organizes chats efficiently in the WordPress admin area.
-- **WooCommerce Integration:** A "Chat with seller" button appears on product pages, launching a chat window pre-configured for that specific product.
-- **AJAX-Based Real-Time Messaging:** Messages are sent and received without page reloads using AJAX polling.
-- **Role-Based User Experience:** Chat bubbles are styled with unique colors and alignment based on the user's role (e.g., Administrator, Customer), providing a clear and intuitive interface.
-- **Read/Unread Status:** New messages are visually highlighted to the user upon receipt.
-- **Typing Indicators:** See when another user is actively typing a message.
-- **Shortcode Support:**
-    - `[workcity_chat session_id="..."]`: Embed a chat window for a specific session on any page.
-    - `[workcity_product_chat]`: Place on a WooCommerce product page template to generate the chat button and modal.
-- **REST API Endpoints:** Provides a foundation for integration with other systems (`/wp-json/workcity/v1/messages/...`).
+✅ Read/unread, typing indicators, role-based bubble styling.
 
----
+✅ Dark / Light theme support — safe page-wide dark-mode CSS (no global invert()).
 
-## Technologies Used
+📦 Features
+CPT for chat sessions — manage chat sessions in WP admin.
 
-- **Backend:** PHP, WordPress Plugin API, AJAX, REST API, Custom Database Tables
-- **Frontend:** JavaScript (jQuery), HTML5, CSS3
-- **Platform:** localWordPress & WooCommerce
+WooCommerce product chat — [workcity_product_chat] adds “Chat with seller” button + modal.
 
----
+Shortcodes
 
-## Setup Instructions
+[workcity_chat session_id="..."] — embed a chat.
 
-1.  **Installation:**
-    - Download the plugin as a `.zip` file.
-    - In your WordPress admin dashboard, navigate to `Plugins` > `Add New` > `Upload Plugin`.
-    - Choose the downloaded zip file and click `Install Now`.
-2.  **Activation:**
-    - After installation, click `Activate Plugin`.
-    - On activation, the plugin automatically creates a custom database table (`wp_workcity_messages`) to store all chat messages efficiently.
-3.  **Usage:**
-    - **For WooCommerce:** Add the `[workcity_product_chat]` shortcode to your single product page template. This will automatically display the "Chat with seller" button.
-    - **For General Chat:** Use the `[workcity_chat session_id="123"]` shortcode on any page or post, replacing "123" with the ID of a chat session post.
+[workcity_product_chat] — product chat button + modal.
 
----
+AJAX API — workcity_send_message, workcity_get_messages, workcity_online_ping, workcity_user_typing.
 
-## Challenges Encountered & Solutions
+REST API (future/optional) — endpoints under /wp-json/workcity/v1/... (scaffolded).
 
-The initial version of this plugin faced several architectural challenges that were addressed to ensure scalability and maintainability.
+File uploads — images shown inline; other files shown as download links.
 
-1.  **Challenge: Inefficient & Fragmented Data Storage**
-    - **Problem:** Chat messages were being stored in multiple, inconsistent ways (post meta, custom post types for each message), which is highly inefficient and would lead to severe database performance issues at scale.
-    - **Solution:** The entire data layer was refactored. A single, indexed custom database table (`wp_workcity_messages`) was created to store all messages. This centralizes the data, allows for efficient querying, and is the best practice for storing relational data in WordPress.
+Role-aware UI — bubble colors/labels for admin, buyer, merchant, designer, agent, etc.
 
-2.  **Challenge: Unmaintainable Backend Logic**
-    - **Problem:** The backend code for handling AJAX requests was duplicated and fragmented, with multiple conflicting functions trying to achieve the same goal. This made the code buggy and difficult to debug or extend.
-    - **Solution:** All AJAX and REST API handlers were rewritten and unified. There is now a single, clean set of functions responsible for sending and receiving messages, with proper security checks (nonces and permissions) and clear, consistent logic.
+🛠️ Installation
+Upload plugin ZIP to Plugins → Add New → Upload Plugin; or copy the plugin folder to wp-content/plugins/.
 
-3.  **Challenge: Lack of Support for Multiple Chat Instances**
-    - **Problem:** The frontend JavaScript was written to handle only one chat box per page, which prevented the WooCommerce product chat modals from functioning correctly.
-    - **Solution:** The primary JavaScript file was re-architected to be instance-aware. It can now manage any number of independent chat windows on a single page, ensuring that the product chat modals work flawlessly without interfering with each other.
+Activate plugin.
 
----
+On activation the plugin runs the installer and creates the wp_workcity_messages table.
 
-## Potential Future Improvements
+⚙️ Quick Usage
+Add [workcity_chat session_id="123"] to a page to render a chat window for session 123.
 
-- **File Uploads:** Allow users to upload and share images or documents within the chat.
-- **Notifications:** Implement email or push notifications to alert users of new messages when they are offline.
-- **Dark/Light Mode Toggle:** Add a user-facing switch to toggle between the dark and light themes (the CSS for this already exists).
-- **WebSocket Integration:** For true real-time communication, the AJAX polling could be upgraded to a WebSocket-based solution to provide instant message delivery with less server load.
+Add [workcity_product_chat] to your product template to show a product-specific chat button.
 
----
+Ensure users are logged in to use chat (server checks for is_user_logged_in()).
 
-## Recent Errors
+🧩 Current fixes / what I changed
+(These are the implemented fixes since the first pass)
 
-Fatal error: Cannot redeclare workcity_get_user_role() (previously declared in C:\Users\HP\Local Sites\workcity-chat\app\public\wp-content\plugins\workcity-chat\includes\chat-functions.php:15) in C:\Users\HP\Local Sites\workcity-chat\app\public\wp-content\plugins\workcity-chat\includes\ajax-handlers.php on line 11
+🔁 Unified AJAX layer
+Consolidated fragmented AJAX handlers into includes/ajax-handlers.php providing single canonical actions (with backward-compatible aliases). All handlers use check_ajax_referer('workcity_chat_nonce','nonce').
 
----
+🧭 Instance-aware frontend
+Rewrote front-end JS so a page can host multiple chat instances (product modals + main chat). Each .workcity-chat-container is independent (session id, current user id).
 
-## Important Notes
+🗄️ Single messages table
+installer.php now creates wp_workcity_messages with proper indexes for session_id and sender_id.
 
-*   **OneSignal Push Notifications:** If you have OneSignal Push Notifications enabled, please deactivate it as this plugin handles email push notifications. 
-*   **Brevo Integration:** This plugin can be integrated with Brevo (Email, SMS, Web Push, Chat) for enhanced marketing and communication features. Further integration details would be provided based on specific requirements.
-*   **YouTube Video:** I will not be able to provide a YouTube video for this project at this time.
+🖼️ File upload support
+AJAX workcity_send_message accepts chat_file via FormData; server uses wp_handle_upload and returns file_url/mime_type.
 
----
+🎨 Dark mode fixes
+Replaced global filter: invert() approach with targeted dark-mode CSS (html.chat-dark-mode) to avoid layout breakage. Dark-mode CSS is limited and specific to common theme wrappers and chat elements.
 
-## 🚧 Challenges Faced So Far 🚧
+🧽 CSS / layout fixes
+Ensured .workcity-chat-container is centered and doesn’t overflow theme columns; .chat-messages is scrollable and bounded (max-height: 60vh). Role color overrides are applied to .workcity-chat-message.role-*.
 
-### 🎨 CSS Role Colors Not Showing
+🧵 Optimistic UI for sending
+Frontend inserts a temporary message while AJAX completes, then replaces it with the server message (or re-syncs).
 
-*   **Problem:** CSS classes for roles like `.role-administrator`, `.role-customer`, etc., are defined, but messages are being appended with `admin-msg` / `user-msg` instead of the role-based classes. This mismatch means styles are never applied.
+🐞 Current challenges / known issues
+These are honest current limitations you should document in the repo and mention in your demo video:
 
-### 🔄 Class Mismatch Between PHP and JS
+⚠️ Fatal: Cannot redeclare workcity_get_user_role()
 
-*   **Problem:** PHP sends a `role_class` (e.g., `role-administrator`), but JavaScript ignores it and uses its own class naming logic. This needs to be unified so styles attach correctly.
+Cause: workcity_get_user_role was defined in multiple included files (chat-functions.php and ajax-handlers.php) leading to a fatal PHP redeclare error on plugin load.
 
-### 👻 Live Updates Working, but Styling Missing
+Fix (applied): Move workcity_get_user_role() to a single include file (e.g., includes/chat-functions.php) and guard it with if (!function_exists('workcity_get_user_role')) { function workcity_get_user_role(...) { ... } }. For safety, all helper functions use function_exists() guard.
 
-*   **Problem:** Fetching messages via AJAX works, and messages display fine, but they have no background colors or text styles.
+⚠️ AJAX 400 (Bad Request) on admin-ajax.php
 
-### 🏗️ HTML Structure Not Matching CSS Expectations
+Cause: missing or incorrect nonce param, or AJAX body not matching check_ajax_referer expectation.
 
-*   **Problem:** CSS expects `.workcity-chat-message` as a base wrapper class, but JavaScript appends plain `<div class="admin-msg">` without that wrapper.
+Fix (applied): Every AJAX call now appends nonce (from workcityChatData.nonce localized in PHP) and uses check_ajax_referer on server. Also ensured FormData includes the action (JS now appends action when using FormData).
 
-### ❓ Unclear File Placement
+⚠️ Dark-mode previously used filter: invert()
 
-*   **Problem:** Initial confusion about where to put CSS and JS files in the WordPress plugin/theme structure. Some CSS was not enqueued or linked properly in WordPress.
+Cause: invert filter flips everything causing theme layout & images to flip.
+
+Fix (applied): Replaced with targeted CSS rules under html.chat-dark-mode to only change backgrounds, text color and inputs. Images/videos are left untouched.
+
+⚠️ Role CSS not applied
+
+Cause: JS appended wrong class names (e.g., admin-msg) while CSS expected .role-administrator.
+
+Fix (applied): JS now respects sender_role/role_class returned from server and uses workcityChatData.current_user_role to mark my-message vs their-message. CSS updated to target .workcity-chat-message.role-*.
+
+⚠️ Placement confusion
+
+Clarification: ajax-handlers.php belongs in includes/ (plugin root includes/ajax-handlers.php). The plugin main file (workcitychat.php) require_once includes it. JS/CSS go under assets/js/ and assets/css/ and must be enqueued via wp_enqueue_script / wp_enqueue_style from the main plugin file.
+
+🧑‍💻 Developer notes (where to put what)
+PHP
+
+workcitychat.php (main plugin) — register activation hook, enqueue assets and wp_localize_script('workcity-chat-js', 'workcityChatData', [ ... ]).
+
+includes/installer.php — DB table creation (runs on activation).
+
+includes/chat-functions.php — helper functions (e.g., workcity_get_user_role) — guard with function_exists.
+
+includes/ajax-handlers.php — all AJAX handlers (wp_ajax_* hooks). Do not redeclare helpers here.
+
+JS
+
+assets/js/chat.js — instance-aware JS (one file). Enqueue with wp_enqueue_script('workcity-chat-js', ..., array('jquery'), ..., true).
+
+Localize the script with workcityChatData = { ajax_url, nonce, current_user_id, current_user_name, current_user_role }.
+
+CSS
+
+assets/css/chat.css — UI + dark mode + role colors + layout safe-fixes (append the "safer dark-mode" CSS in this README).
+
+Database
+
+Installer creates {$wpdb->prefix}workcity_messages with id, session_id, sender_id, message, file_url (optional), mime_type, is_read, created_at.
+
+🔒 Security & Best Practices
+All AJAX endpoints use check_ajax_referer('workcity_chat_nonce', 'nonce').
+
+All user-input is sanitized (sanitize_textarea_field, esc_html when rendering).
+
+File uploads are passed through WordPress wp_handle_upload and MIME type is checked.
+
+Avoid echoing raw DB data without sanitizing.
+

@@ -1,3 +1,4 @@
+
 <?php
 /**
  * AJAX Handlers for Workcity Chat - Merged & cleaned
@@ -7,14 +8,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
-
 /**
  * Send chat message (supports optional file upload).
  * Primary action: workcity_send_message
  */
 function workcity_chat_send_message() {
-    check_ajax_referer('workcity_chat_nonce', 'nonce');
+    // Verify nonce with both possible nonce names for compatibility
+    $nonce_verified = false;
+    if (isset($_POST['nonce']) && wp_verify_nonce($_POST['nonce'], 'workcity_chat_nonce')) {
+        $nonce_verified = true;
+    }
+    
+    if (!$nonce_verified) {
+        wp_send_json_error(array('message' => 'Security verification failed.'));
+    }
 
     if (!is_user_logged_in()) {
         wp_send_json_error(array('message' => 'You must be logged in to chat.'));
@@ -23,7 +30,7 @@ function workcity_chat_send_message() {
     $session_id = isset($_POST['session_id']) ? intval($_POST['session_id']) : 0;
     $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
 
-    if (empty($session_id) && empty($_FILES['chat_file'])) {
+    if (empty($session_id) && empty($message) && empty($_FILES['chat_file'])) {
         wp_send_json_error(array('message' => 'Invalid chat session or empty message/file.'));
     }
 
@@ -49,6 +56,12 @@ function workcity_chat_send_message() {
     $table_name = $wpdb->prefix . 'workcity_messages';
     $sender_id = get_current_user_id();
 
+    // Check if table exists
+    $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+    if (!$table_exists) {
+        wp_send_json_error(array('message' => 'Database table does not exist. Please contact the administrator.'));
+    }
+
     // If table supports file_url/mime_type, insert those columns; otherwise append marker to message.
     $has_file_columns = $wpdb->get_results("SHOW COLUMNS FROM `{$table_name}` LIKE 'file_url'");
 
@@ -66,7 +79,9 @@ function workcity_chat_send_message() {
         $ok = $wpdb->insert($table_name, $data, $format);
     } else {
         if ($file_url) {
-            $message_to_store = $message . "\n\n[[FILE::" . $file_url . "]]";
+            $message_to_store = $message . "\
+\
+[[FILE::" . $file_url . "]]";
         } else {
             $message_to_store = $message;
         }
@@ -97,7 +112,7 @@ function workcity_chat_send_message() {
         );
         wp_send_json_success(array('message' => $new_message));
     } else {
-        wp_send_json_error(array('message' => 'Failed to save message.'));
+        wp_send_json_error(array('message' => 'Failed to save message: ' . $wpdb->last_error));
     }
 }
 // Primary hook:
@@ -105,6 +120,7 @@ add_action('wp_ajax_workcity_send_message', 'workcity_chat_send_message');
 // Backwards-compatible aliases used across your codebase:
 add_action('wp_ajax_workcity_send_chat_message', 'workcity_chat_send_message');
 add_action('wp_ajax_send_chat_message', 'workcity_chat_send_message');
+add_action('wp_ajax_workcity_save_message', 'workcity_chat_send_message');
 add_action('wp_ajax_workcity_send_chat_message_v2', 'workcity_chat_send_message');
 add_action('wp_ajax_nopriv_workcity_send_message', 'workcity_chat_send_message'); // optional - remove if you don't want guests
 
@@ -113,7 +129,15 @@ add_action('wp_ajax_nopriv_workcity_send_message', 'workcity_chat_send_message')
  * Primary action: workcity_get_messages
  */
 function workcity_chat_get_messages() {
-    check_ajax_referer('workcity_chat_nonce', 'nonce');
+    // Verify nonce with both possible nonce names for compatibility
+    $nonce_verified = false;
+    if (isset($_POST['nonce']) && wp_verify_nonce($_POST['nonce'], 'workcity_chat_nonce')) {
+        $nonce_verified = true;
+    }
+    
+    if (!$nonce_verified) {
+        wp_send_json_error(array('message' => 'Security verification failed.'));
+    }
 
     $current_user_id = get_current_user_id();
     if (!$current_user_id) {
@@ -129,6 +153,12 @@ function workcity_chat_get_messages() {
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'workcity_messages';
+
+    // Check if table exists
+    $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+    if (!$table_exists) {
+        wp_send_json_error(array('message' => 'Database table does not exist. Please contact the administrator.'));
+    }
 
     $sql = $wpdb->prepare(
         "SELECT m.* , u.display_name as sender_name
@@ -168,7 +198,17 @@ add_action('wp_ajax_nopriv_workcity_get_messages', 'workcity_chat_get_messages')
  * Simple online ping / typing endpoints (optional: add real implementation if needed).
  */
 function workcity_online_ping() {
-    check_ajax_referer('workcity_chat_nonce', 'nonce');
+    // Verify nonce with both possible nonce names for compatibility
+    $nonce_verified = false;
+    if (isset($_POST['nonce']) && wp_verify_nonce($_POST['nonce'], 'workcity_chat_nonce')) {
+        $nonce_verified = true;
+    }
+    
+    if (!$nonce_verified) {
+        wp_send_json_error(array('message' => 'Security verification failed.'));
+        return;
+    }
+    
     // Implement your online presence tracking here (e.g., store transient / user meta)
     wp_send_json_success(array('ok' => true));
 }
@@ -176,8 +216,19 @@ add_action('wp_ajax_workcity_online_ping', 'workcity_online_ping');
 add_action('wp_ajax_nopriv_workcity_online_ping', 'workcity_online_ping');
 
 function workcity_user_typing() {
-    check_ajax_referer('workcity_chat_nonce', 'nonce');
+    // Verify nonce with both possible nonce names for compatibility
+    $nonce_verified = false;
+    if (isset($_POST['nonce']) && wp_verify_nonce($_POST['nonce'], 'workcity_chat_nonce')) {
+        $nonce_verified = true;
+    }
+    
+    if (!$nonce_verified) {
+        wp_send_json_error(array('message' => 'Security verification failed.'));
+        return;
+    }
+    
     // Implement typing tracking here (transients or option per session)
     wp_send_json_success(array('ok' => true));
 }
 add_action('wp_ajax_workcity_user_typing', 'workcity_user_typing');
+add_action('wp_ajax_nopriv_workcity_user_typing', 'workcity_user_typing');

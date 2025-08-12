@@ -1,3 +1,4 @@
+
 /* assets/js/chat.js
    Single instance-aware chat frontend.
    Requires localized workcityChatData: { ajax_url, nonce, current_user_id }
@@ -31,11 +32,13 @@ jQuery(function($){
     var $input    = $container.find('#chat-input-' + sessionId);
     var $file     = $container.find('#chat-file-' + sessionId);
     var $typing   = $container.find('#chat-typing-indicator-' + sessionId);
+    var $sendBtn  = $container.find('#chat-send-btn-' + sessionId);
 
     // fallbacks
     if (!$messages.length) $messages = $container.find('.chat-messages').first();
     if (!$form.length) $form = $container.find('.chat-form').first();
     if (!$input.length) $input = $container.find('textarea, input[type="text"]').first();
+    if (!$sendBtn.length) $sendBtn = $container.find('.chat-send-btn').first();
 
     var lastId = 0;
     var fetching = false;
@@ -78,7 +81,7 @@ jQuery(function($){
                +  '<div class="meta"><strong>['+escHtml(role)+'] '+sender+'</strong> <span class="chat-time">'+time+'</span></div>'
                +  '<div class="text">'+escHtml(m.message || '')+'</div>'
                +  fileHtml
-               +  (typeof m.is_read !== 'undefined' ? (m.is_read ? '<span class="chat-checkmark chat-checkmark-read">✔✔</span>' : '<span class="chat-checkmark chat-checkmark-unread">✔</span>') : '')
+               +  (typeof m.is_read !== 'undefined' ? (m.is_read ? '<span class="chat-checkmark chat-checkmark-read">\u2714\u2714</span>' : '<span class="chat-checkmark chat-checkmark-unread">\u2714</span>') : '')
                +  '</div>';
       appendTo($messages, html);
       if (!opts.noScroll) $messages.scrollTop($messages[0].scrollHeight);
@@ -115,19 +118,18 @@ jQuery(function($){
     }
 
     // send message (supports file)
-    $form.off('submit.chat').on('submit.chat', function(e){
-      e.preventDefault();
+    function sendMessage() {
       var text = ($input.val()||'').trim();
       var fileEl = ($file && $file.length ? $file[0] : null);
       var hasFile = fileEl && fileEl.files && fileEl.files.length > 0;
       if (!text && !hasFile) return;
 
       var fd = new FormData();
-fd.append('action', 'workcity_send_message');
-fd.append('nonce', workcityChatData.nonce);
-fd.append('session_id', sessionId);
-if (text) fd.append('message', text);
-if (hasFile) fd.append('chat_file', fileEl.files[0]);
+      fd.append('action', 'workcity_send_message');
+      fd.append('nonce', workcityChatData.nonce);
+      fd.append('session_id', sessionId);
+      if (text) fd.append('message', text);
+      if (hasFile) fd.append('chat_file', fileEl.files[0]);
 
       // optimistic UI: show the message right away as "sending"
       var tmpMessage = {
@@ -176,12 +178,38 @@ if (hasFile) fd.append('chat_file', fileEl.files[0]);
         $input.val('');
         if (hasFile) { fileEl.value = ''; }
       });
+    }
+
+    // Form submission handler
+    $form.off('submit.chat').on('submit.chat', function(e){
+      e.preventDefault();
+      sendMessage();
+    });
+
+    // Send button click handler
+    if ($sendBtn.length) {
+      $sendBtn.off('click.chat').on('click.chat', function(e){
+        e.preventDefault();
+        sendMessage();
+      });
+    }
+
+    // Enter key handler (with shift+enter support for newlines)
+    $input.on('keypress', function(e){
+      if (e.which === 13 && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
     });
 
     // typing ping (optional)
     var typingTimer = null;
     $input.on('input', function(){
-      $.post(workcityChatData.ajax_url, { action: 'workcity_user_typing', nonce: workcityChatData.nonce, session_id: sessionId });
+      $.post(workcityChatData.ajax_url, { 
+        action: 'workcity_user_typing', 
+        nonce: workcityChatData.nonce, 
+        session_id: sessionId 
+      });
       clearTimeout(typingTimer);
       typingTimer = setTimeout(function(){}, 1500);
     });
@@ -192,7 +220,12 @@ if (hasFile) fd.append('chat_file', fileEl.files[0]);
   });
 
   // keep alive ping (optional)
-  setInterval(function(){ $.post(workcityChatData.ajax_url, { action: 'workcity_online_ping', nonce: workcityChatData.nonce }); }, 15000);
+  setInterval(function(){ 
+    $.post(workcityChatData.ajax_url, { 
+      action: 'workcity_online_ping', 
+      nonce: workcityChatData.nonce 
+    }); 
+  }, 15000);
 });
 
 /* Global dark-mode toggle appended outside jQuery ready so it exists even if no container */
@@ -216,12 +249,12 @@ if (hasFile) fd.append('chat_file', fileEl.files[0]);
   function setMode(mode){
     if(mode === 'dark'){
       document.documentElement.classList.add('chat-dark-mode');
-      btn.textContent = '☀️ Light Mode';
+      btn.textContent = '\u2600\ufe0f Light Mode';
       btn.style.background = '#111';
       btn.style.color = '#fff';
     } else {
       document.documentElement.classList.remove('chat-dark-mode');
-      btn.textContent = '🌙 Dark Mode';
+      btn.textContent = '\ud83c\udf19 Dark Mode';
       btn.style.background = '#fff';
       btn.style.color = '#222';
     }
@@ -237,41 +270,3 @@ if (hasFile) fd.append('chat_file', fileEl.files[0]);
     setMode(cur === 'dark' ? 'light' : 'dark');
   });
 })();
-
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('chat-message');
-    const chatMessages = document.getElementById('chat-messages');
-
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const message = input.value.trim();
-            if (!message) return;
-
-            fetch(workcityChat.ajax_url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                },
-                body: `action=workcity_send_message&message=${encodeURIComponent(message)}&nonce=${workcityChat.nonce}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Append the new message instantly
-                    const msgEl = document.createElement('div');
-                    msgEl.className = 'chat-message';
-                    msgEl.textContent = message;
-                    chatMessages.appendChild(msgEl);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    input.value = '';
-                } else {
-                    console.error(data.data || 'Failed to send message');
-                }
-            })
-            .catch(error => console.error('Error sending message:', error));
-        });
-    }
-});
